@@ -1031,7 +1031,7 @@ if chapter=="User Input":
             f'''
             ### Prediction:
             
-            Today, you will have {model.predict(X_trans)[0]:.0f} {target} users per hour.
+            We estimate about `{max(0, model.predict(X_trans)[0]):.0f} {target}` users per hour.
 
             '''
         except:
