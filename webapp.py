@@ -39,11 +39,11 @@ if chapter == 'Introduction':
     Rental bikes in 2011 and 2012 with corresponding weather and seasonal information.  
     Features:
     - datetime: date and time in 'yyyy-mm-dd hh:mm:ss' format
-    - season: 
-        1: Winter
-        2: Spring
-        3: Summer
-        4: Fall)
+    - season:  
+        1: Winter  
+        2: Spring  
+        3: Summer  
+        4: Fall
     - holiday : Whether day is holiday or not
     - weekday : Day of the week (0-6: Monday-Sunday)
     - workingday : Whether working day or not
