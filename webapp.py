@@ -729,155 +729,159 @@ if chapter == 'Linear Regression':
     '''
     ## Linear Regression
     '''
+    try:
+        X_train_transformed, X_test_transformed, y_train, y_test = st.session_state['data']
 
-    X_train_transformed, X_test_transformed, y_train, y_test = st.session_state['data']
+        model = LinearRegression()
 
-    model = LinearRegression()
+        model.fit(X_train_transformed, y_train)
 
-    model.fit(X_train_transformed, y_train)
+        st.session_state["Linear Regression"] = model
 
-    st.session_state["Linear Regression"] = model
+        prediction = model.predict(X_train_transformed)
+        train_err = mean_squared_error(y_train, prediction, squared=False)
+        
+        f'''
+        ### Prediction on Train set:
+        MSE: {train_err:.5}  
+        R2 Score: {r2_score(y_train, prediction):.5}
+        '''
 
-    prediction = model.predict(X_train_transformed)
-    train_err = mean_squared_error(y_train, prediction, squared=False)
-    
-    f'''
-    ### Prediction on Train set:
-    MSE: {train_err:.5}  
-    R2 Score: {r2_score(y_train, prediction):.5}
-    '''
+        fig = plt.figure(figsize=(10,5))
+        ax = fig.add_subplot(1,2,1)
+        ax.plot(y_train, prediction, 'o')
+        ax.set_title("Prediction on X_train", color='white')
+        ax.set_xlabel('y_train', color='white')
+        ax.set_ylabel('prediction', color='white')
 
-    fig = plt.figure(figsize=(10,5))
-    ax = fig.add_subplot(1,2,1)
-    ax.plot(y_train, prediction, 'o')
-    ax.set_title("Prediction on X_train", color='white')
-    ax.set_xlabel('y_train', color='white')
-    ax.set_ylabel('prediction', color='white')
+        # Settings
+        fig.set_facecolor("#0E1117")
+        ax.tick_params(axis='both', colors='#ffffff')
+        ax.spines['bottom'].set_color('white')
+        ax.spines['left'].set_color('white')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.set_facecolor('#0E1117')
 
-    # Settings
-    fig.set_facecolor("#0E1117")
-    ax.tick_params(axis='both', colors='#ffffff')
-    ax.spines['bottom'].set_color('white')
-    ax.spines['left'].set_color('white')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.set_facecolor('#0E1117')
+        prediction = model.predict(X_test_transformed)
+        test_err = mean_squared_error(y_test, prediction, squared=False)
 
-    prediction = model.predict(X_test_transformed)
-    test_err = mean_squared_error(y_test, prediction, squared=False)
+        f'''
+        ### Prediction on Test set:
+        MSE: {test_err:.5}  
+        R2 Score: {r2_score(y_test, prediction):.5}
+        '''
 
-    f'''
-    ### Prediction on Test set:
-    MSE: {test_err:.5}  
-    R2 Score: {r2_score(y_test, prediction):.5}
-    '''
+        ax = fig.add_subplot(1,2,2)
+        ax.plot(y_test, prediction, 'o')
+        ax.set_title("Prediction on X_test", color='white')
+        ax.set_xlabel('y_test', color='white')
 
-    ax = fig.add_subplot(1,2,2)
-    ax.plot(y_test, prediction, 'o')
-    ax.set_title("Prediction on X_test", color='white')
-    ax.set_xlabel('y_test', color='white')
+        # Settings
+        fig.set_facecolor("#0E1117")
+        ax.tick_params(axis='both', colors='#ffffff')
+        ax.spines['bottom'].set_color('white')
+        ax.spines['left'].set_color('white')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.set_facecolor('#0E1117')
 
-    # Settings
-    fig.set_facecolor("#0E1117")
-    ax.tick_params(axis='both', colors='#ffffff')
-    ax.spines['bottom'].set_color('white')
-    ax.spines['left'].set_color('white')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.set_facecolor('#0E1117')
-
-    st.pyplot(fig)
+        st.pyplot(fig)
+    except:
+        '''#### Click on Feature Engineering tab to modify and form the dataset'''
 
 
 
 
 
 if chapter == 'Neural Network':
-
+    
     '''
     ## Neural Network
     '''
+    try:
+        X_train_transformed, X_test_transformed, y_train, y_test = st.session_state['data']
 
-    X_train_transformed, X_test_transformed, y_train, y_test = st.session_state['data']
+        solver = st.selectbox(
+            'Select Solver: ',
+            ('adam', 'sgd', 'lbfgs')
+            )
 
-    solver = st.selectbox(
-        'Select Solver: ',
-        ('adam', 'sgd', 'lbfgs')
+        activation = st.selectbox(
+            'Select activation function: ',
+            ('relu', 'tanh', 'logistic', 'identity')
         )
 
-    activation = st.selectbox(
-        'Select activation function: ',
-        ('relu', 'tanh', 'logistic', 'identity')
-    )
+        n_layers = st.slider('Number of hidden layers: ',
+            1, 5, 2, 1)
 
-    n_layers = st.slider('Number of hidden layers: ',
-        1, 5, 2, 1)
+        hidden_layer_sizes = [1]*n_layers
 
-    hidden_layer_sizes = [1]*n_layers
+        for layer in range(n_layers):
+            hidden_layer_sizes[layer] = st.slider(f"Number of neurons in layer {layer+1}",
+                                                    1, 20, max(7*(2-layer), 5), 1)
 
-    for layer in range(n_layers):
-        hidden_layer_sizes[layer] = st.slider(f"Number of neurons in layer {layer+1}",
-                                                1, 20, max(7*(2-layer), 5), 1)
+        model = MLPRegressor(alpha=1e-4, 
+                            activation=activation,
+                            solver=solver,
+                            hidden_layer_sizes=hidden_layer_sizes,
+                            max_iter=10000)
 
-    model = MLPRegressor(alpha=1e-4, 
-                        activation=activation,
-                        solver=solver,
-                        hidden_layer_sizes=hidden_layer_sizes,
-                        max_iter=10000)
+        model.fit(X_train_transformed, y_train)
 
-    model.fit(X_train_transformed, y_train)
+        st.session_state["Neural Network"] = model
 
-    st.session_state["Neural Network"] = model
+        prediction = model.predict(X_train_transformed)
+        train_err = mean_squared_error(y_train, prediction, squared=False)
+        
+        f'''
+        ### Prediction on Train set:
+        MSE: {train_err:.5}  
+        R2 Score: {r2_score(y_train, prediction):.5}
+        '''
 
-    prediction = model.predict(X_train_transformed)
-    train_err = mean_squared_error(y_train, prediction, squared=False)
-    
-    f'''
-    ### Prediction on Train set:
-    MSE: {train_err:.5}  
-    R2 Score: {r2_score(y_train, prediction):.5}
-    '''
+        fig = plt.figure(figsize=(10,5))
+        ax = fig.add_subplot(1,2,1)
+        ax.plot(y_train, prediction, 'o')
+        ax.set_title("Prediction on X_train", color='white')
+        ax.set_xlabel('y_train', color='white')
+        ax.set_ylabel('prediction', color='white')
 
-    fig = plt.figure(figsize=(10,5))
-    ax = fig.add_subplot(1,2,1)
-    ax.plot(y_train, prediction, 'o')
-    ax.set_title("Prediction on X_train", color='white')
-    ax.set_xlabel('y_train', color='white')
-    ax.set_ylabel('prediction', color='white')
+        # Settings
+        fig.set_facecolor("#0E1117")
+        ax.tick_params(axis='both', colors='#ffffff')
+        ax.spines['bottom'].set_color('white')
+        ax.spines['left'].set_color('white')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.set_facecolor('#0E1117')
 
-    # Settings
-    fig.set_facecolor("#0E1117")
-    ax.tick_params(axis='both', colors='#ffffff')
-    ax.spines['bottom'].set_color('white')
-    ax.spines['left'].set_color('white')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.set_facecolor('#0E1117')
+        prediction = model.predict(X_test_transformed)
+        test_err = mean_squared_error(y_test, prediction, squared=False)
 
-    prediction = model.predict(X_test_transformed)
-    test_err = mean_squared_error(y_test, prediction, squared=False)
+        f'''
+        ### Prediction on Test set:
+        MSE: {test_err:.5}  
+        R2 Score: {r2_score(y_test, prediction):.5}
+        '''
 
-    f'''
-    ### Prediction on Test set:
-    MSE: {test_err:.5}  
-    R2 Score: {r2_score(y_test, prediction):.5}
-    '''
+        ax = fig.add_subplot(1,2,2)
+        ax.plot(y_test, prediction, 'o')
+        ax.set_title("Prediction on X_test", color='white')
+        ax.set_xlabel('y_test', color='white')
 
-    ax = fig.add_subplot(1,2,2)
-    ax.plot(y_test, prediction, 'o')
-    ax.set_title("Prediction on X_test", color='white')
-    ax.set_xlabel('y_test', color='white')
+        # Settings
+        fig.set_facecolor("#0E1117")
+        ax.tick_params(axis='both', colors='#ffffff')
+        ax.spines['bottom'].set_color('white')
+        ax.spines['left'].set_color('white')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.set_facecolor('#0E1117')
 
-    # Settings
-    fig.set_facecolor("#0E1117")
-    ax.tick_params(axis='both', colors='#ffffff')
-    ax.spines['bottom'].set_color('white')
-    ax.spines['left'].set_color('white')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.set_facecolor('#0E1117')
-
-    st.pyplot(fig)
+        st.pyplot(fig)
+    except:
+        '''#### Click on Feature Engineering tab to modify and form the dataset'''
 
 
 if chapter == 'Kernel Ridge Regression':
@@ -885,160 +889,166 @@ if chapter == 'Kernel Ridge Regression':
     '''
     ## Kernel Ridge Regression
     '''
+    try:
+        X_train_transformed, X_test_transformed, y_train, y_test = st.session_state['data']
 
-    X_train_transformed, X_test_transformed, y_train, y_test = st.session_state['data']
+        kernel = st.selectbox(
+            'Select Kernel: ',
+                ['rbf','polynomial','cosine','sigmoid','linear']
+            )
 
-    kernel = st.selectbox(
-        'Select Kernel: ',
-            ['rbf','polynomial','cosine','sigmoid','linear']
+        alpha_num = st.slider('Alpha Number: ',
+            1, 999, 1, 1)
+
+
+        alpha_exp = st.slider('Alpha Exponent: ',
+            -10, 1, -7, 1)
+
+        gamma_num = st.slider('Gamma Number: ',
+            1, 999, 999, 1)
+
+
+        gamma_exp = st.slider('Gamma Exponent: ',
+            -10, 1, -6, 1)
+
+
+        model = KernelRidge(kernel=kernel,
+                        alpha=alpha_num*(10**alpha_exp),
+                        gamma=gamma_num*(10**gamma_exp)
         )
 
-    alpha_num = st.slider('Alpha Number: ',
-        1, 999, 1, 1)
+        model.fit(X_train_transformed, y_train)
 
+        st.session_state['Kernel Ridge Regression'] = model
 
-    alpha_exp = st.slider('Alpha Exponent: ',
-        -10, 1, -7, 1)
+        prediction = model.predict(X_train_transformed)
+        train_err = mean_squared_error(y_train, prediction, squared=False)
+        
+        f'''
+        ### Prediction on Train set:
+        MSE: {train_err:.5}  
+        R2 Score: {r2_score(y_train, prediction):.5}
+        '''
 
-    gamma_num = st.slider('Gamma Number: ',
-        1, 999, 999, 1)
+        fig = plt.figure(figsize=(10,5))
+        ax = fig.add_subplot(1,2,1)
+        ax.plot(y_train, prediction, 'o')
+        ax.set_title("Prediction on X_train", color='white')
+        ax.set_xlabel('y_train', color='white')
+        ax.set_ylabel('prediction', color='white')
 
+        # Settings
+        fig.set_facecolor("#0E1117")
+        ax.tick_params(axis='both', colors='#ffffff')
+        ax.spines['bottom'].set_color('white')
+        ax.spines['left'].set_color('white')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.set_facecolor('#0E1117')
 
-    gamma_exp = st.slider('Gamma Exponent: ',
-        -10, 1, -6, 1)
+        prediction = model.predict(X_test_transformed)
+        test_err = mean_squared_error(y_test, prediction, squared=False)
 
+        f'''
+        ### Prediction on Test set:
+        MSE: {test_err:.5}  
+        R2 Score: {r2_score(y_test, prediction):.5}
+        '''
 
-    model = KernelRidge(kernel=kernel,
-                    alpha=alpha_num*(10**alpha_exp),
-                    gamma=gamma_num*(10**gamma_exp)
-    )
+        ax = fig.add_subplot(1,2,2)
+        ax.plot(y_test, prediction, 'o')
+        ax.set_title("Prediction on X_test", color='white')
+        ax.set_xlabel('y_test', color='white')
 
-    model.fit(X_train_transformed, y_train)
+        # Settings
+        fig.set_facecolor("#0E1117")
+        ax.tick_params(axis='both', colors='#ffffff')
+        ax.spines['bottom'].set_color('white')
+        ax.spines['left'].set_color('white')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.set_facecolor('#0E1117')
 
-    st.session_state['Kernel Ridge'] = model
+        st.pyplot(fig)
+    except:
+        '''#### Click on Feature Engineering tab to modify and form the dataset'''
 
-    prediction = model.predict(X_train_transformed)
-    train_err = mean_squared_error(y_train, prediction, squared=False)
-    
-    f'''
-    ### Prediction on Train set:
-    MSE: {train_err:.5}  
-    R2 Score: {r2_score(y_train, prediction):.5}
-    '''
-
-    fig = plt.figure(figsize=(10,5))
-    ax = fig.add_subplot(1,2,1)
-    ax.plot(y_train, prediction, 'o')
-    ax.set_title("Prediction on X_train", color='white')
-    ax.set_xlabel('y_train', color='white')
-    ax.set_ylabel('prediction', color='white')
-
-    # Settings
-    fig.set_facecolor("#0E1117")
-    ax.tick_params(axis='both', colors='#ffffff')
-    ax.spines['bottom'].set_color('white')
-    ax.spines['left'].set_color('white')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.set_facecolor('#0E1117')
-
-    prediction = model.predict(X_test_transformed)
-    test_err = mean_squared_error(y_test, prediction, squared=False)
-
-    f'''
-    ### Prediction on Test set:
-    MSE: {test_err:.5}  
-    R2 Score: {r2_score(y_test, prediction):.5}
-    '''
-
-    ax = fig.add_subplot(1,2,2)
-    ax.plot(y_test, prediction, 'o')
-    ax.set_title("Prediction on X_test", color='white')
-    ax.set_xlabel('y_test', color='white')
-
-    # Settings
-    fig.set_facecolor("#0E1117")
-    ax.tick_params(axis='both', colors='#ffffff')
-    ax.spines['bottom'].set_color('white')
-    ax.spines['left'].set_color('white')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.set_facecolor('#0E1117')
-
-    st.pyplot(fig)
 
 
 if chapter=="User Input":
 
     f'''
     ## Make Predictions Live
-
-    The best model results arise from using the Kernal Ridge Regressor with the given default values.  
-    However, feel free to choose the model you'd like to make the prediction with:
     '''
+    try: 
+        '''
+        The best model results arise from using the Kernal Ridge Regressor with the given default values.  
+        However, feel free to choose the model you'd like to make the prediction with:
+        '''
+        model_name = st.selectbox(
+            'Select Model: ',
+            ( 'Kernel Ridge Regression', 'Neural Network', 'Linear Regression')
+            )
 
-    model_name = st.selectbox(
-        'Select Model: ',
-        ( 'Kernel Ridge', 'Neural Network', 'Linear Regression')
-        )
+        model = st.session_state[model_name]
+        categorical, numerical, target, ohe, sc = st.session_state['stuff']
 
-    model = st.session_state[model_name]
-    categorical, numerical, target, ohe, sc = st.session_state['stuff']
+        weats = ['Cloudy', 'Light Rain', 'Heavy Rain']
+        seas = ['Spring', 'Summer', 'Fall', 'Winter']
+        boo = ['No', 'Yes']
 
-    weats = ['Cloudy', 'Light Rain', 'Heavy Rain']
-    seas = ['Spring', 'Summer', 'Fall', 'Winter']
-    boo = ['No', 'Yes']
+        df = {}
 
-    df = {}
+        for cat in categorical:
+            if cat == 'season':
+                thing = seas.index(st.selectbox("Season:", seas))+1
 
-    for cat in categorical:
-        if cat == 'season':
-            thing = seas.index(st.selectbox("Season:", seas))+1
+            if cat == 'holiday':
+                thing = boo.index(st.selectbox("Holiday:", boo))
 
-        if cat == 'holiday':
-            thing = boo.index(st.selectbox("Holiday:", boo))
+            if cat == 'workingday':
+                thing = boo.index(st.selectbox("Working Day:", boo))
 
-        if cat == 'workingday':
-            thing = boo.index(st.selectbox("Working Day:", boo))
+            if cat=='weather':
+                thing = weats.index(st.selectbox("Weather:", weats))+1
 
-        if cat=='weather':
-            thing = weats.index(st.selectbox("Weather:", weats))+1
+            df[cat] = [thing]
 
-        df[cat] = [thing]
+        for num in numerical:
+            thing = st.slider(num.capitalize(), cf[num].min(), cf[num].max(), 0.1)
+            df[num] = [thing]
 
-    for num in numerical:
-        thing = st.slider(num.capitalize(), cf[num].min(), cf[num].max(), 0.1)
-        df[num] = [thing]
-
-    X = pd.DataFrame(df)
-    
-    '### Data:'
-    st.write(X)
-
-    X_trans, _, _ = transform(X, ohe, sc)
-
-    '### Transformed Data:'
-    st.write(X_trans)
-    try:
-        f'''
-        ### Prediction:
+        X = pd.DataFrame(df)
         
-        Today, you will have {model.predict(X_trans)[0]:.0f} {target} users per hour.
+        '### Data:'
+        st.write(X)
 
+        X_trans, _, _ = transform(X, ohe, sc)
+
+        '### Transformed Data:'
+        st.write(X_trans)
+        try:
+            f'''
+            ### Prediction:
+            
+            Today, you will have {model.predict(X_trans)[0]:.0f} {target} users per hour.
+
+            '''
+        except:
+            f'''
+            #### --- Train the model, then try again ---
+            '''
+
+        '''
+        ### Conclusion:
+
+        The model has learnt how to predict on different features accurately.  
+        This can be seen by varying the features above and seeing how the predicted count reacts to it.  
+
+        1. As temperature goes up, the count goes up but beyond a certain point it starts going down.
+        2. Holiday and working days have a significant impact on the prediction as we can see the count almost double on holidays and non-working days.
+        3. The model trains poorly and makes bad predictions on the weather column if included. This supports the point in EDA Inference - Summary.
         '''
     except:
-        f'''
-        #### --- Train the model, then try again ---
-        '''
-
-    '''
-    ### Conclusion:
-
-    The model has learnt how to predict on different features accurately.  
-    This can be seen by varying the features above and seeing how the predicted count reacts to it.  
-
-    1. As temperature goes up, the count goes up but beyond a certain point it starts going down.
-    2. Holiday and working days have a significant impact on the prediction as we can see the count almost double on holidays and non-working days.
-    3. The model trains poorly and makes bad predictions on the weather column if included. This supports the point in EDA Inference - Summary.
-    '''
+        f'''#### Click on {model_name} tab to train the model.'''
 
