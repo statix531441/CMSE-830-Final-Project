@@ -39,24 +39,28 @@ if chapter == 'Introduction':
     Rental bikes in 2011 and 2012 with corresponding weather and seasonal information.  
     Features:
     - datetime: date and time in 'yyyy-mm-dd hh:mm:ss' format
-    - season: (1:winter, 2:spring, 3:summer, 4:fall)
-    - holiday : weather day is holiday or not
-    - weekday : day of the week
-    - workingday : if day is neither weekend nor holiday is 1, otherwise is 0
+    - season: 
+        1: Winter
+        2: Spring
+        3: Summer
+        4: Fall)
+    - holiday : Whether day is holiday or not
+    - weekday : Day of the week (0-6: Monday-Sunday)
+    - workingday : Whether working day or not
     - weather:   
-        1- Clear, Partly cloudy  
-        2- Mist + Cloudy, Mist + Broken clouds, Mist + Few clouds, Mist  
-        3- Light Snow, Light Rain + Thunderstorm + Scattered clouds, Light Rain + Scattered clouds  
-        4- Heavy Rain + Hail + Thunderstorm + Mist, Snow + Fog  
+        1: Clear, Partly cloudy  
+        2: Mist + Cloudy, Mist + Broken clouds, Mist + Few clouds, Mist  
+        3: Light Snow, Light Rain + Thunderstorm + Scattered clouds, Light Rain + Scattered clouds  
+        4: Heavy Rain + Hail + Thunderstorm + Mist, Snow + Fog  
     - temp : Temperature in Celsius
     - atemp: Apparent temperature.
     - humidity: Humidity
     - windspeed: Wind speed
 
     Target:  
-    - casual: count of casual users
-    - registered: count of registered users
-    - count: count of total rental bikes including both casual and registered
+    - casual: Number of casual users
+    - registered: Number of registered users
+    - count: Number of total rental bikes including both casual and registered
     '''
 
 df = pd.read_csv('bike_sharing.csv')
@@ -897,7 +901,7 @@ if chapter == 'Kernel Ridge Regression':
         -10, 1, -7, 1)
 
     gamma_num = st.slider('Gamma Number: ',
-        1, 999, 543, 1)
+        1, 999, 999, 1)
 
 
     gamma_exp = st.slider('Gamma Exponent: ',
@@ -1037,19 +1041,4 @@ if chapter=="User Input":
     2. Holiday and working days have a significant impact on the prediction as we can see the count almost double on holidays and non-working days.
     3. The model trains poorly and makes bad predictions on the weather column if included. This supports the point in EDA Inference - Summary.
     '''
-
-    
-
-    
-
-    
-        
-
-    
-
-
-
-
-
-
 
